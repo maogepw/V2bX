@@ -400,7 +400,7 @@ require (
 	zombiezen.com/go/capnproto2 v2.18.2+incompatible // indirect
 )
 
-replace github.com/sagernet/sing-box => D:\dsh\deps\sing-box_mod
+replace github.com/sagernet/sing-box => github.com/maogepw/sing-box_mod v0.0.0-20261121115557-1ee81487179a
 
 replace github.com/xtls/xray-core v1.261031.0 => github.com/wyx2685/xray-core v0.0.0-20261105071511-0061c59f331a
 
