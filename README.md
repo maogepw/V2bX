@@ -1,89 +1,68 @@
 # V2bX
 
-[![](https://img.shields.io/badge/TgChat-UnOfficialV2Board%E4%BA%A4%E6%B5%81%E7%BE%A4-green)](https://t.me/unofficialV2board)
-[![](https://img.shields.io/badge/TgChat-YuzukiProjects%E4%BA%A4%E6%B5%81%E7%BE%A4-blue)](https://t.me/YuzukiProjects)
+一个基于多内核（Xray / sing-box / Hysteria2）的 V2board / Xboard 节点服务端，修改自 XrayR，支持 Vmess/Vless、Trojan、Shadowsocks、Hysteria1/2 等协议。
 
-A V2board node server based on multi core, modified from XrayR.  
-一个基于多种内核的V2board节点服务端，修改自XrayR，支持V2ay,Trojan,Shadowsocks协议。
+本仓库为 [wyx2685/V2bX](https://github.com/wyx2685/V2bX) 的维护分支（maogepw/V2bX），已升级至 go1.27 + 最新版三大内核（xray-core、sing-box v1.14、hysteria v2.12）。
 
-**注意： 本项目需要搭配[修改版V2board](https://github.com/wyx2685/v2board)**
+**注意：需搭配[修改版 V2board](https://github.com/wyx2685/v2board) 或 Xboard 使用。**
 
 ## 特点
 
 * 永久开源且免费。
-* 支持Vmess/Vless, Trojan， Shadowsocks, Hysteria1/2多种协议。
-* 支持Vless和XTLS等新特性。
-* 支持单实例对接多节点，无需重复启动。
-* 支持限制在线IP。
-* 支持限制Tcp连接数。
-* 支持节点端口级别、用户级别限速。
-* 配置简单明了。
-* 修改配置自动重启实例。
-* 支持多种内核，易扩展。
+* 支持 Vmess/Vless、Trojan、Shadowsocks、Hysteria1/2 多种协议及 Vless、XTLS 等新特性。
+* 单实例对接多节点，无需重复启动；修改配置自动重启实例。
+* 支持在线 IP 限制、TCP 连接数限制、节点/用户级别限速。
+* 自动申请与续签 TLS 证书，自定义 DNS，审计规则。
 * 支持条件编译，可仅编译需要的内核。
 
-## 功能介绍
+## 下载安装
 
-| 功能        | v2ray | trojan | shadowsocks | hysteria1/2 |
-|-----------|-------|--------|-------------|----------|
-| 自动申请tls证书 | √     | √      | √           | √        |
-| 自动续签tls证书 | √     | √      | √           | √        |
-| 在线人数统计    | √     | √      | √           | √        |
-| 审计规则      | √     | √      | √           | √         |
-| 自定义DNS    | √     | √      | √           | √        |
-| 在线IP数限制   | √     | √      | √           | √        |
-| 连接数限制     | √     | √      | √           | √         |
-| 跨节点IP数限制  |√      |√       |√            |√          |
-| 按照用户限速    | √     | √      | √           | √         |
-| 动态限速(未测试) | √     | √      | √           | √         |
-
-## TODO
-
-- [ ] 重新实现动态限速
-- [ ] 完善使用文档
-
-## 软件安装
-
-### 一键安装
+### 一键安装（Linux）
 
 ```
-wget -N https://raw.githubusercontent.com/wyx2685/V2bX-script/master/install.sh && bash install.sh
+wget -N https://raw.githubusercontent.com/maogepw/V2bX-script/master/install.sh && bash install.sh
 ```
 
-### 手动安装
+### 手动下载
+
+| 平台 | 下载 |
+|------|------|
+| Linux x86_64 | [V2bX-linux-64.zip](https://github.com/maogepw/V2bX/releases/latest/download/V2bX-linux-64.zip) |
+| Linux arm64 | [V2bX-linux-arm64.zip](https://github.com/maogepw/V2bX/releases/latest/download/V2bX-linux-arm64.zip) |
+| Windows x86_64 | [V2bX-windows-64.zip](https://github.com/maogepw/V2bX/releases/latest/download/V2bX-windows-64.zip) |
+| Windows arm64 | [V2bX-windows-arm64.zip](https://github.com/maogepw/V2bX/releases/latest/download/V2bX-windows-arm64.zip) |
+| macOS Apple Silicon | [V2bX-macos-arm64.zip](https://github.com/maogepw/V2bX/releases/latest/download/V2bX-macos-arm64.zip) |
+
+全部发布版本见 [Releases](https://github.com/maogepw/V2bX/releases)。压缩包内含示例配置与 geoip/geosite 数据文件。
+
+### 手动安装教程
 
 [手动安装教程](https://v2bx.v-50.me/v2bx/v2bx-xia-zai-he-an-zhuang/install/manual)
 
 ## 构建
+
 ``` bash
 # 通过-tags选项指定要编译的内核， 可选 xray， sing, hysteria2
-GOEXPERIMENT=jsonv2 go build -v -o build_assets/V2bX -tags "sing xray hysteria2 with_quic with_grpc with_utls with_wireguard with_acme with_gvisor" -trimpath -ldflags "-X 'github.com/InazumaV/V2bX/cmd.version=$version' -s -w -buildid="
+# 需要 go >= 1.27，Windows 下可执行文件名需加 .exe 后缀
+GOEXPERIMENT=jsonv2 go build -v -o build_assets/V2bX -tags "sing xray hysteria2 with_quic with_grpc with_utls with_wireguard with_acme with_gvisor" -trimpath -ldflags "-checklinkname=0 -s -w -buildid="
 ```
 
 ## 配置文件及详细使用教程
 
 [详细使用教程](https://v2bx.v-50.me/)
 
-## 免责声明
+## 问题反馈
 
-* 此项目用于本人自用，因此本人不能保证向后兼容性。
-* 由于本人能力有限，不能保证所有功能的可用性，如果出现问题请在Issues反馈。
-* 本人不对任何人使用本项目造成的任何后果承担责任。
-* 本人比较多变，因此本项目可能会随想法或思路的变动随性更改项目结构或大规模重构代码，若不能接受请勿使用。
-
-## 赞助
-
-[赞助链接](https://v-50.me/)
+使用中遇到问题请在 [Issues](https://github.com/maogepw/V2bX/issues) 反馈。
 
 ## Thanks
 
-* [Project X](https://github.com/XTLS/)
-* [V2Fly](https://github.com/v2fly)
-* [VNet-V2ray](https://github.com/ProxyPanel/VNet-V2ray)
-* [Air-Universe](https://github.com/crossfw/Air-Universe)
-* [XrayR](https://github.com/XrayR/XrayR)
+* [XrayR](https://github.com/XrayR/XrayR)（项目起源）
+* [Project X / Xray](https://github.com/XTLS/)
 * [sing-box](https://github.com/SagerNet/sing-box)
+* [Hysteria](https://github.com/apernet/hysteria)
+* [V2board](https://github.com/v2board/v2board) / [Xboard](https://github.com/xboard-panel/xboard)
 
-## Stars 增长记录
+## License
 
-[![Stargazers over time](https://starchart.cc/wyx2685/V2bX.svg)](https://starchart.cc/wyx2685/V2bX)
+[MIT](LICENSE)
