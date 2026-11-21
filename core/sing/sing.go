@@ -45,7 +45,7 @@ func init() {
 
 func New(c *conf.CoreConfig) (vCore.Core, error) {
 	ctx := context.Background()
-	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry(), include.DNSTransportRegistry(), include.ServiceRegistry())
+	ctx = box.Context(ctx, include.InboundRegistry(), include.OutboundRegistry(), include.EndpointRegistry(), include.DNSTransportRegistry(), include.ServiceRegistry(), include.CertificateProviderRegistry())
 	options := option.Options{}
 	if len(c.SingConfig.OriginalPath) != 0 {
 		data, err := os.ReadFile(c.SingConfig.OriginalPath)
@@ -83,8 +83,11 @@ func New(c *conf.CoreConfig) (vCore.Core, error) {
 		counter: sync.Map{},
 	}
 	b.Router().AppendTracker(hs)
+	// adapter.Router.GetCtx was removed in sing-box 1.14; the context built
+	// above (registries + service registry + pause manager) is what inbounds
+	// need for Create, so keep using it.
 	return &Sing{
-		ctx:        b.Router().GetCtx(),
+		ctx:        ctx,
 		box:        b,
 		hookServer: hs,
 		router:     b.Router(),

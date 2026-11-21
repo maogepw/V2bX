@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -141,11 +142,10 @@ func (n *Hysteria2node) getConn(info *panel.NodeInfo, config *conf.Options) (net
 	case "", "plain":
 		return conn, nil
 	case "salamander":
-		ob, err := obfs.NewSalamanderObfuscator([]byte(info.Hysteria2.ObfsPassword))
-		if err != nil {
-			return nil, err
-		}
-		return obfs.WrapPacketConn(conn, ob), nil
+		// Hysteria 2.14 replaced the generic obfuscator interface
+		// (NewSalamanderObfuscator + WrapPacketConn) with per-scheme wrappers that
+		// return the conn directly.
+		return obfs.WrapPacketConnSalamander(conn, []byte(info.Hysteria2.ObfsPassword))
 	default:
 		return nil, fmt.Errorf("unsupported obfuscation type")
 	}
@@ -239,19 +239,22 @@ func (n *Hysteria2node) getOutboundConfig(c *serverConfig) (server.Outbound, err
 
 	if c.ACL.File != "" {
 		hasACL = true
-		acl, err := outbounds.NewACLEngineFromFile(c.ACL.File, obs, gLoader)
+		data, err := os.ReadFile(c.ACL.File)
 		if err != nil {
 			return nil, err
 		}
-		uOb = acl
+		uOb, err = outbounds.NewACLEngineFromString(string(data), obs, gLoader)
+		if err != nil {
+			return nil, err
+		}
 	} else if len(c.ACL.Inline) > 0 {
 		n.Logger.Debug("found ACL Inline:", zap.Strings("Inline", c.ACL.Inline))
 		hasACL = true
-		acl, err := outbounds.NewACLEngineFromString(strings.Join(c.ACL.Inline, "\n"), obs, gLoader)
+		var err error
+		uOb, err = outbounds.NewACLEngineFromString(strings.Join(c.ACL.Inline, "\n"), obs, gLoader)
 		if err != nil {
 			return nil, err
 		}
-		uOb = acl
 	} else {
 		// No ACL, use the first outbound
 		uOb = obs[0].Outbound

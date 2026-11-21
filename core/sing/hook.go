@@ -14,6 +14,7 @@ import (
 	"github.com/InazumaV/V2bX/common/counter"
 	"github.com/sagernet/sing-box/adapter"
 	"github.com/sagernet/sing-box/log"
+	"github.com/sagernet/sing-tun"
 	N "github.com/sagernet/sing/common/network"
 )
 
@@ -121,4 +122,11 @@ func (h *HookServer) RoutedPacketConnection(_ context.Context, conn N.PacketConn
 	}
 	conn = counter.NewPacketConnCounter(conn, t.GetCounter(m.User))
 	return conn
+}
+
+// RoutedFlow implements the tun-flow branch of adapter.ConnectionTracker
+// (required since sing-box 1.14). V2bX only runs server-side inbounds and
+// never routes tun flows, so there is nothing to track per flow.
+func (h *HookServer) RoutedFlow(_ context.Context, _ adapter.InboundContext, _ adapter.Rule, _ adapter.Outbound) tun.FlowTracker {
+	return nil
 }
