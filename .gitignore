@@ -16,3 +16,9 @@ output/*
 .idea/*
 newV2bX.sh
 quic_singbox.sh
+
+# local build/test artifacts
+build_assets/
+node/*.key
+node/*.pem
+node/cert/
